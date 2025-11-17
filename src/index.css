@@ -1,41 +1,284 @@
-
 @import "tailwindcss";
-/* Removed invalid @plugin rule */
 
-
-/* Removed invalid @plugin rule and kept the theme variables */
-:root {
-    --color-base-100: oklch(25% 0.09 281.288);
-    --color-base-200: oklch(35% 0.144 278.697);
-    --color-base-300: oklch(39% 0.195 277.366);
-    --color-base-content: oklch(93% 0.034 272.788);
-    --color-primary: oklch(81% 0.111 293.571);
-    --color-primary-content: oklch(28% 0.141 291.089);
-    --color-secondary: oklch(80% 0.105 251.813);
-    --color-secondary-content: oklch(28% 0.091 267.935);
-    --color-accent: oklch(87% 0.15 154.449);
-    --color-accent-content: oklch(26% 0.065 152.934);
-    --color-neutral: oklch(39% 0.195 277.366);
-    --color-neutral-content: oklch(96% 0.018 272.314);
-    --color-info: oklch(58% 0.158 241.966);
-    --color-info-content: oklch(97% 0.013 236.62);
-    --color-success: oklch(60% 0.118 184.704);
-    --color-success-content: oklch(98% 0.014 180.72);
-    --color-warning: oklch(66% 0.179 58.318);
-    --color-warning-content: oklch(98% 0.022 95.277);
-    --color-error: oklch(58% 0.253 17.585);
-    --color-error-content: oklch(96% 0.015 12.422);
-    --radius-selector: 0rem;
-    --radius-field: 1rem;
-    --radius-box: 0.25rem;
-    --size-selector: 0.25rem;
-    --size-field: 0.25rem;
-    --border: 1px;
-    --depth: 0;
-    --noise: 0;
-}
- 
-
+/* Base styles */
 body {
-    background-color: #ffffff; /* Same light grey or choose a more suitable color */
+  background-color: #f5f5f5;
+  background-image: 
+    linear-gradient(rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.3)),
+    url('/bg_paper image.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  color: #222222;
+  font-family: 'Kalam', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  scroll-behavior: smooth;
+  line-height: 1.6;
+}
+
+/* Dark mode styles */
+[data-theme="alphadestroyer-dark"] body {
+  background-color: #1a1a1a;
+  background-image: 
+    linear-gradient(rgba(26, 26, 26, 0.6), rgba(26, 26, 26, 0.6)),
+    url('/bg_paper image.jpg');
+  color: #f0f0f0;
+}
+
+/* Section spacing */
+section {
+  scroll-margin-top: 5rem;
+}
+
+/* Focus styles */
+button:focus-visible,
+a:focus-visible {
+  outline: 2px solid #89AC46;
+  outline-offset: 2px;
+}
+
+/* Custom utility classes */
+.bg-blur {
+  backdrop-filter: blur(10px);
+}
+
+/* Notebook lines */
+.notebook-lines {
+  position: relative;
+}
+
+.notebook-lines::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 40px;
+  bottom: 0;
+  width: 1px;
+  background: rgba(0, 0, 0, 0.1);
+  z-index: -1;
+}
+
+[data-theme="alphadestroyer-dark"] .notebook-lines::before {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+/* Note card styles */
+.note-card {
+  background: rgba(255, 255, 255, 0.85);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  position: relative;
+  padding: 24px 24px 24px 60px;
+  margin: 20px 0;
+  border-radius: 0 8px 8px 0;
+}
+
+.note-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: 40px;
+  background: rgba(0, 0, 0, 0.05);
+  border-right: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 8px 0 0 8px;
+}
+
+[data-theme="alphadestroyer-dark"] .note-card {
+  background: rgba(40, 40, 40, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+}
+
+[data-theme="alphadestroyer-dark"] .note-card::before {
+  background: rgba(255, 255, 255, 0.05);
+  border-right: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Note title */
+.note-title {
+  position: relative;
+  padding-left: 20px;
+  margin-bottom: 16px;
+}
+
+.note-title::before {
+  content: "•";
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #89AC46;
+  font-size: 24px;
+  line-height: 1;
+}
+
+/* Handwritten button */
+.handwritten-btn {
+  background-color: #89AC46;
+  color: white;
+  border: none;
+  padding: 16px 32px;
+  font-family: 'Kalam', cursive;
+  font-size: 1.25rem;
+  font-weight: 600;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 3px 3px 6px rgba(0, 0, 0, 0.15);
+  transform: rotate(-1deg);
+  display: inline-block;
+  text-align: center;
+}
+
+.handwritten-btn:hover {
+  background-color: #7a9b3f;
+  transform: rotate(-2deg) scale(1.05);
+  box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.handwritten-btn:active {
+  transform: rotate(-1deg) scale(0.98);
+}
+
+/* Secondary button */
+.handwritten-btn-secondary {
+  background-color: transparent;
+  color: #89AC46;
+  border: 3px solid #89AC46;
+  padding: 16px 32px;
+  font-family: 'Kalam', cursive;
+  font-size: 1.25rem;
+  font-weight: 600;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 3px 3px 6px rgba(0, 0, 0, 0.15);
+  transform: rotate(-1deg);
+  display: inline-block;
+  text-align: center;
+}
+
+.handwritten-btn-secondary:hover {
+  background-color: rgba(137, 172, 70, 0.1);
+  transform: rotate(-2deg) scale(1.05);
+  box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.handwritten-btn-secondary:active {
+  transform: rotate(-1deg) scale(0.98);
+}
+
+/* Form inputs */
+.handwritten-input {
+  font-family: 'Kalam', cursive;
+  font-size: 1.1rem;
+  padding: 16px 20px;
+  border: 3px solid #89AC46;
+  border-radius: 12px;
+  background-color: rgba(255, 255, 255, 0.85);
+  transition: all 0.3s ease;
+  transform: rotate(-1deg);
+  width: 100%;
+  box-sizing: border-box;
+  color: #222222;
+}
+
+[data-theme="alphadestroyer-dark"] .handwritten-input {
+  background-color: rgba(40, 40, 40, 0.85);
+  color: #f0f0f0;
+}
+
+.handwritten-input:focus {
+  outline: none;
+  border-color: #6a8a35;
+  background-color: rgba(255, 255, 255, 0.95);
+  transform: rotate(0deg);
+  box-shadow: 0 0 0 4px rgba(137, 172, 70, 0.2);
+}
+
+[data-theme="alphadestroyer-dark"] .handwritten-input:focus {
+  background-color: rgba(40, 40, 40, 0.95);
+}
+
+.handwritten-input::placeholder {
+  color: rgba(34, 34, 34, 0.7);
+}
+
+[data-theme="alphadestroyer-dark"] .handwritten-input::placeholder {
+  color: rgba(240, 240, 240, 0.7);
+}
+
+/* Navigation styles */
+.nav-text {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #222222;
+}
+
+[data-theme="alphadestroyer-dark"] .nav-text {
+  color: #f0f0f0;
+}
+
+/* Improve text visibility in light theme */
+.text-gray-600 {
+  color: #333333;
+}
+
+.text-gray-900 {
+  color: #000000;
+}
+
+.text-gray-700 {
+  color: #111111;
+}
+
+[data-theme="alphadestroyer-dark"] .text-gray-600 {
+  color: #cccccc;
+}
+
+[data-theme="alphadestroyer-dark"] .text-gray-900 {
+  color: #ffffff;
+}
+
+[data-theme="alphadestroyer-dark"] .text-gray-700 {
+  color: #f0f0f0;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  section {
+    scroll-margin-top: 4rem;
   }
+  
+  .text-5xl {
+    font-size: 2.5rem;
+  }
+  
+  .text-7xl {
+    font-size: 3rem;
+  }
+  
+  .note-card {
+    padding: 16px 16px 16px 40px;
+  }
+  
+  .note-card::before {
+    width: 30px;
+  }
+  
+  .notebook-lines::before {
+    left: 30px;
+  }
+  
+  .handwritten-btn, .handwritten-btn-secondary {
+    padding: 14px 28px;
+    font-size: 1.1rem;
+  }
+  
+  .handwritten-input {
+    padding: 14px 18px;
+    font-size: 1rem;
+  }
+}
