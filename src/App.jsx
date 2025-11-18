@@ -330,7 +330,7 @@ function App() {
             </h1>
             
             <p className="text-xl text-gray-900 dark:text-gray-300 max-w-2xl mx-auto mb-10" style={{ fontFamily: 'Kalam, cursive' }}>
-              I create digital experiences that blend functionality with aesthetic simplicity.
+              I am a full stackk developer with pasion of creating digital assets that provide solutions to real word problems.
             </p>
             
             <div className="flex flex-col sm:flex-row justify-center gap-4">
@@ -371,7 +371,7 @@ function App() {
                   title: "Wonderwise",
                   desc: "Interactive learning platform with real-time collaboration features.",
                   tags: ["React", "PocketBase", "Framer Motion"],
-                  image: "/wonder.png",
+                  image: "/wonder.png"1,
                 },
                 {
                   title: "Portfolio Website",
@@ -1003,10 +1003,10 @@ function App() {
                 </svg>
               </a>
               <a 
-                href="https://discord.com/users/dalcove_23425" 
+                href="https://discord.com/users/your-username" 
                 target="_blank" 
                 rel="noopener noreferrer"
-                className="text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-200 transition-colors"
+                className="text-gray-400 hover:text-white transition-colors"
               >
                 <span className="sr-only">Discord</span>
                 <svg className="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
@@ -1014,10 +1014,10 @@ function App() {
                 </svg>
               </a>
               <a 
-                href="https://instagram.com/_dalcov_" 
+                href="https://instagram.com/your-instagram-handle" 
                 target="_blank" 
                 rel="noopener noreferrer"
-                className="text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-200 transition-colors"
+                className="text-gray-400 hover:text-white transition-colors"
               >
                 <span className="sr-only">Instagram</span>
                 <svg className="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
@@ -1025,10 +1025,10 @@ function App() {
                 </svg>
               </a>
               <a 
-                href="https://x.com/DalcoveI90335" 
+                href="https://x.com/your-twitter-handle" 
                 target="_blank" 
                 rel="noopener noreferrer"
-                className="text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-200 transition-colors"
+                className="text-gray-400 hover:text-white transition-colors"
               >
                 <span className="sr-only">X</span>
                 <svg className="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
@@ -1037,10 +1037,10 @@ function App() {
               </a>
             </div>
             <div className="text-center md:text-right">
-              <p className="text-gray-700 dark:text-gray-300" style={{ fontFamily: 'Kalam, cursive' }}>
+              <p className="text-gray-400" style={{ fontFamily: 'Kalam, cursive' }}>
                 © {new Date().getFullYear()} Developed by Dalcove. All rights reserved.
               </p>
-              <p className="text-gray-600 dark:text-gray-400 text-sm mt-1" style={{ fontFamily: 'Kalam, cursive' }}>
+              <p className="text-gray-500 text-sm mt-1" style={{ fontFamily: 'Kalam, cursive' }}>
                 Crafted with simplicity and intention
               </p>
             </div>
