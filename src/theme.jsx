@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from "react";
 
 const ThemeToggle = () => {
-  const [theme, setTheme] = useState("alphadestroyer-light");
+  const [theme, setTheme] = useState("alphadestroyer-dark");
 
   useEffect(() => {
-    const savedTheme = localStorage.getItem("theme") || "alphadestroyer-light";
+    // Set dark mode as default
+    const savedTheme = localStorage.getItem("theme") || "alphadestroyer-dark";
     document.documentElement.setAttribute("data-theme", savedTheme);
     setTheme(savedTheme);
   }, []);
@@ -35,6 +36,11 @@ const ThemeToggle = () => {
     }
   };
 
+  // Since we want to hide the theme toggle button, we return null
+  return null;
+  
+  // Original button code (commented out since we're hiding it)
+  /*
   return (
     <button 
       onClick={toggleTheme} 
@@ -44,6 +50,7 @@ const ThemeToggle = () => {
       {getThemeIcon()}
     </button>
   );
+  */
 };
 
 export default ThemeToggle;

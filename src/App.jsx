@@ -3,6 +3,27 @@ import React, { useState, useEffect, useRef } from 'react';
 import ThemeToggle from './theme';
 import emailjs from '@emailjs/browser';
 
+// Loading Animation Component
+const LoadingSpinner = () => (
+  <div className="flex justify-center items-center py-12">
+    <div className="relative">
+      <div className="w-12 h-12 border-4 border-[#89AC46] border-t-transparent rounded-full animate-spin"></div>
+      <div className="absolute top-0 left-0 w-12 h-12 border-4 border-[#89AC46]/30 rounded-full"></div>
+    </div>
+  </div>
+);
+
+// Accessibility Skip Link Component
+const SkipToContent = () => (
+  <a 
+    href="#main-content" 
+    className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:bg-[#89AC46] focus:text-white focus:px-4 focus:py-2 focus:rounded-md"
+    style={{ fontFamily: 'Kalam, cursive' }}
+  >
+    Skip to main content
+  </a>
+);
+
 function App() {
   const [activeSection, setActiveSection] = useState('home');
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -20,6 +41,7 @@ function App() {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState('');
+  const [isLoading, setIsLoading] = useState(true);
   const carouselRef = useRef(null);
   
   // Initialize EmailJS
@@ -32,6 +54,14 @@ function App() {
         throttle: 10000
       }
     });
+  }, []);
+
+  // Simulate loading delay
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 1500);
+    return () => clearTimeout(timer);
   }, []);
 
   // Gallery images data
@@ -236,73 +266,85 @@ function App() {
 
   return (
     <>
-      {/* Minimal Navigation */}
-      <nav className="fixed top-0 left-0 right-0 bg-white/90 dark:bg-gray-900/90 backdrop-blur-sm px-6 py-4 z-50 border-b border-gray-200 dark:border-gray-800 shadow-md">
-        <div className="flex justify-between items-center max-w-7xl mx-auto">
-          <div className="flex items-center space-x-2">
-            <div className="w-4 h-4 bg-[#89AC46] rounded-full"></div>
-            <span className="text-2xl font-bold text-gray-900 dark:text-white" style={{ fontFamily: 'Kalam, cursive' }}>dalcove</span>
-          </div>
-          <div className="flex items-center space-x-6">
-            <ul className="hidden md:flex space-x-8 text-lg font-bold">
-              {['home', 'work', 'gallery', 'about', 'contact'].map((item) => (
-                <li key={item}>
+      <SkipToContent />
+      {isLoading ? (
+        <div className="min-h-screen flex items-center justify-center bg-white dark:bg-gray-900">
+          <LoadingSpinner />
+        </div>
+      ) : (
+        <>
+          {/* Minimal Navigation */}
+          <nav className="fixed top-0 left-0 right-0 bg-white/90 dark:bg-gray-900/90 backdrop-blur-sm px-6 py-4 z-50 border-b border-gray-200 dark:border-gray-800 shadow-md" role="navigation" aria-label="Main navigation">
+            <div className="flex justify-between items-center max-w-7xl mx-auto">
+              <div className="flex items-center space-x-2">
+                <div className="w-4 h-4 bg-[#89AC46] rounded-full"></div>
+                <span className="text-2xl font-bold text-gray-900 dark:text-white" style={{ fontFamily: 'Kalam, cursive' }}>dalcove</span>
+              </div>
+              <div className="flex items-center space-x-6">
+                <ul className="hidden md:flex space-x-8 text-lg font-bold">
+                  {['home', 'work', 'gallery', 'about', 'achievements', 'resume', 'skills', 'contact'].map((item) => (
+                    <li key={item}>
+                      <button
+                        onClick={() => scrollToSection(item)}
+                        className={`nav-text ${
+                          activeSection === item 
+                            ? 'text-[#89AC46]' 
+                            : 'text-gray-700 hover:text-gray-900 dark:text-gray-300 dark:hover:text-gray-100'
+                        } transition-colors`}
+                        style={{ fontFamily: 'Kalam, cursive' }}
+                        aria-label={`Go to ${item} section`}
+                      >
+                        {item === 'achievements' ? 'Achievements' : item === 'resume' ? 'Resume' : item.charAt(0).toUpperCase() + item.slice(1)}
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+                {/* Theme Toggle Button */}
+                <div className="hidden md:block">
+                  <ThemeToggle />
+                </div>
+                <button
+                  className="md:hidden text-gray-700 dark:text-gray-300"
+                  onClick={toggleMobileMenu}
+                  aria-expanded={isMobileMenuOpen}
+                  aria-label="Toggle mobile menu"
+                >
+                  <div className="w-8 h-8 flex flex-col justify-center space-y-1.5">
+                    <div className={`w-8 h-1 bg-gray-700 dark:bg-gray-300 transition-transform ${isMobileMenuOpen ? 'rotate-45 translate-y-2' : ''}`}></div>
+                    <div className={`w-8 h-1 bg-gray-700 dark:bg-gray-300 ${isMobileMenuOpen ? 'opacity-0' : 'opacity-100'}`}></div>
+                    <div className={`w-8 h-1 bg-gray-700 dark:bg-gray-300 transition-transform ${isMobileMenuOpen ? '-rotate-45 -translate-y-2' : ''}`}></div>
+                  </div>
+                </button>
+              </div>
+            </div>
+          </nav>
+
+          {/* Mobile Menu */}
+          {isMobileMenuOpen && (
+            <div className="fixed inset-0 bg-white dark:bg-gray-900 z-40 pt-20 md:hidden" role="dialog" aria-modal="true" aria-label="Mobile navigation">
+              <div className="flex flex-col p-8 space-y-6">
+                {['home', 'work', 'gallery', 'about', 'achievements', 'resume', 'skills', 'contact'].map((item) => (
                   <button
-                    onClick={() => scrollToSection(item)}
-                    className={`nav-text ${
+                    key={item}
+                    onClick={() => handleMenuClick(item)}
+                    className={`text-left py-4 text-2xl font-bold ${
                       activeSection === item 
                         ? 'text-[#89AC46]' 
-                        : 'text-gray-700 hover:text-gray-900 dark:text-gray-300 dark:hover:text-gray-100'
-                    } transition-colors`}
+                        : 'text-gray-900 dark:text-gray-100'
+                    }`}
                     style={{ fontFamily: 'Kalam, cursive' }}
                   >
-                    {item.charAt(0).toUpperCase() + item.slice(1)}
+                    {item === 'achievements' ? 'Achievements' : item === 'resume' ? 'Resume' : item.charAt(0).toUpperCase() + item.slice(1)}
                   </button>
-                </li>
-              ))}
-            </ul>
-            {/* Theme Toggle Button */}
-            <div className="hidden md:block">
-              <ThemeToggle />
-            </div>
-            <button
-              className="md:hidden text-gray-700 dark:text-gray-300"
-              onClick={toggleMobileMenu}
-            >
-              <div className="w-8 h-8 flex flex-col justify-center space-y-1.5">
-                <div className={`w-8 h-1 bg-gray-700 dark:bg-gray-300 transition-transform ${isMobileMenuOpen ? 'rotate-45 translate-y-2' : ''}`}></div>
-                <div className={`w-8 h-1 bg-gray-700 dark:bg-gray-300 ${isMobileMenuOpen ? 'opacity-0' : 'opacity-100'}`}></div>
-                <div className={`w-8 h-1 bg-gray-700 dark:bg-gray-300 transition-transform ${isMobileMenuOpen ? '-rotate-45 -translate-y-2' : ''}`}></div>
+                ))}
+                <div className="pt-4 border-t border-gray-200 dark:border-gray-800">
+                  <ThemeToggle />
+                </div>
               </div>
-            </button>
-          </div>
-        </div>
-      </nav>
-
-      {/* Mobile Menu */}
-      {isMobileMenuOpen && (
-        <div className="fixed inset-0 bg-white dark:bg-gray-900 z-40 pt-20 md:hidden">
-          <div className="flex flex-col p-8 space-y-6">
-            {['home', 'work', 'gallery', 'about', 'contact'].map((item) => (
-              <button
-                key={item}
-                onClick={() => handleMenuClick(item)}
-                className={`text-left py-4 text-2xl font-bold ${
-                  activeSection === item 
-                    ? 'text-[#89AC46]' 
-                    : 'text-gray-900 dark:text-gray-100'
-                }`}
-                style={{ fontFamily: 'Kalam, cursive' }}
-              >
-                {item.charAt(0).toUpperCase() + item.slice(1)}
-              </button>
-            ))}
-            <div className="pt-4 border-t border-gray-200 dark:border-gray-800">
-              <ThemeToggle />
             </div>
-          </div>
-        </div>
-      )}
+          )}
+
+          <main id="main-content" tabIndex="-1">
 
       {/* Home Section */}
       <section
@@ -371,7 +413,7 @@ function App() {
                   title: "Wonderwise",
                   desc: "Interactive learning platform with real-time collaboration features.",
                   tags: ["React", "PocketBase", "Framer Motion"],
-                  image: "/wonder.png"1,
+                  image: "/wonder.png",
                 },
                 {
                   title: "Portfolio Website",
@@ -457,7 +499,7 @@ function App() {
                   {['React js',"next js","nest js", 'JavaScript', 'Node.js', 'Tailwind', 'Express', 'MongoDB', 'Figma', 'Git',"shadcn","daisyui"].map((skill, index) => (
                     <span 
                       key={index}
-                      className="px-3 py-1 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-full text-sm"
+                      className="px-3 py-1 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-3300 rounded-full text-sm"
                       style={{ fontFamily: 'Kalam, cursive' }}
                     >
                       {skill}
@@ -971,6 +1013,323 @@ function App() {
         </div>
       )}
 
+      {/* Achievements & Certifications Section */}
+      <section
+        id="achievements"
+        className="min-h-screen flex items-center justify-center px-6 py-20"
+      >
+        <div className="max-w-4xl mx-auto">
+          <div className="note-card">
+            <div className="text-center mb-16">
+              <h2 className="text-4xl font-bold text-gray-900 dark:text-white mb-4 note-title" style={{ fontFamily: 'Kalam, cursive' }}>Achievements & Certifications</h2>
+              <p className="text-lg text-gray-900 dark:text-gray-300 max-w-2xl mx-auto" style={{ fontFamily: 'Kalam, cursive' }}>
+                Recognitions and credentials that highlight my expertise and accomplishments.
+              </p>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              {/* Certifications */}
+              <div className="note-card">
+                <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-6 note-title" style={{ fontFamily: 'Kalam, cursive' }}>Certifications</h3>
+                <div className="space-y-6">
+                  {[
+                    {
+                      name: "AWS Certified Developer",
+                      issuer: "Amazon Web Services",
+                      date: "2023",
+                      description: "Demonstrated expertise in developing and maintaining AWS-based applications."
+                    },
+                    {
+                      name: "Google UX Design Professional",
+                      issuer: "Google",
+                      date: "2023",
+                      description: "Comprehensive understanding of user experience design principles."
+                    },
+                    {
+                      name: "Microsoft Azure Fundamentals",
+                      issuer: "Microsoft",
+                      date: "2022",
+                      description: "Foundational knowledge of cloud services and Azure solutions."
+                    },
+                    {
+                      name: "Full Stack Web Development",
+                      issuer: "FreeCodeCamp",
+                      date: "2022",
+                      description: "Comprehensive skills in modern web development technologies."
+                    }
+                  ].map((cert, index) => (
+                    <div key={index} className="border-l-4 border-[#89AC46] pl-4 py-1">
+                      <h4 className="text-xl font-bold text-gray-900 dark:text-white" style={{ fontFamily: 'Kalam, cursive' }}>{cert.name}</h4>
+                      <p className="text-[#89AC46] text-sm" style={{ fontFamily: 'Kalam, cursive' }}>{cert.issuer} • {cert.date}</p>
+                      <p className="text-gray-600 dark:text-gray-300 mt-2" style={{ fontFamily: 'Kalam, cursive' }}>{cert.description}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              
+              {/* Achievements */}
+              <div className="note-card">
+                <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-6 note-title" style={{ fontFamily: 'Kalam, cursive' }}>Achievements</h3>
+                <div className="space-y-6">
+                  {[
+                    {
+                      title: "1st Place - Scrapyard Hackathon",
+                      event: "Scrapyard Hackathon 2025",
+                      description: "Improved student card management system to latest version."
+                    },
+                    {
+                      title: "1st Place - Hacknoel Competition",
+                      event: "Hacknoel 2024",
+                      description: "Developed student cards management system with QR code integration."
+                    },
+                    {
+                      title: "3rd Place - African's Talking Hackathon",
+                      event: "Carnegie Mellon University 2024",
+                      description: "Built AI-based web application for easier exploration with technology."
+                    },
+                    {
+                      title: "2nd Place - Daydream Game Jam",
+                      event: "Daydream Hackathon 2025",
+                      description: "Created flight simulator game with immersive gameplay."
+                    }
+                  ].map((achievement, index) => (
+                    <div key={index} className="border-l-4 border-[#89AC46] pl-4 py-1">
+                      <h4 className="text-xl font-bold text-gray-900 dark:text-white" style={{ fontFamily: 'Kalam, cursive' }}>{achievement.title}</h4>
+                      <p className="text-[#89AC46] text-sm" style={{ fontFamily: 'Kalam, cursive' }}>{achievement.event}</p>
+                      <p className="text-gray-600 dark:text-gray-300 mt-2" style={{ fontFamily: 'Kalam, cursive' }}>{achievement.description}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Interactive Resume Section */}
+      <section
+        id="resume"
+        className="min-h-screen flex items-center justify-center px-6 py-20"
+      >
+        <div className="max-w-4xl mx-auto">
+          <div className="note-card">
+            <div className="text-center mb-16">
+              <h2 className="text-4xl font-bold text-gray-900 dark:text-white mb-4 note-title" style={{ fontFamily: 'Kalam, cursive' }}>Interactive Resume</h2>
+              <p className="text-lg text-gray-900 dark:text-gray-300 max-w-2xl mx-auto" style={{ fontFamily: 'Kalam, cursive' }}>
+                Explore my professional journey and experience in an interactive format.
+              </p>
+            </div>
+            
+            <div className="space-y-12">
+              {/* Experience Timeline */}
+              <div>
+                <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-8 note-title" style={{ fontFamily: 'Kalam, cursive' }}>Professional Experience</h3>
+                <div className="space-y-8">
+                  {[
+                    {
+                      role: "Full Stack Developer",
+                      company: "Tech Innovations Inc.",
+                      period: "2023 - Present",
+                      description: "Developing scalable web applications using React, Node.js, and cloud technologies.",
+                      achievements: [
+                        "Reduced application load time by 40% through optimization techniques",
+                        "Implemented CI/CD pipeline reducing deployment time by 60%",
+                        "Led a team of 3 developers in delivering 5 major projects"
+                      ]
+                    },
+                    {
+                      role: "Frontend Developer",
+                      company: "Creative Solutions LLC",
+                      period: "2021 - 2023",
+                      description: "Built responsive user interfaces with React and modern CSS frameworks.",
+                      achievements: [
+                        "Developed 15+ responsive web applications for various clients",
+                        "Improved user engagement by 35% through UI/UX enhancements",
+                        "Mentored 4 junior developers in frontend best practices"
+                      ]
+                    },
+                    {
+                      role: "Web Developer Intern",
+                      company: "Digital Agency Co.",
+                      period: "2020 - 2021",
+                      description: "Assisted in creating and maintaining client websites and web applications.",
+                      achievements: [
+                        "Contributed to 8 client projects successfully delivered",
+                        "Learned and implemented modern development workflows",
+                        "Received 'Outstanding Intern' recognition"
+                      ]
+                    }
+                  ].map((job, index) => (
+                    <div key={index} className="relative pl-8 border-l-2 border-[#89AC46]">
+                      <div className="absolute -left-2 top-0 w-4 h-4 bg-[#89AC46] rounded-full"></div>
+                      <div className="bg-white/50 dark:bg-gray-800/50 p-6 rounded-lg">
+                        <div className="flex flex-col md:flex-row md:justify-between md:items-start mb-3">
+                          <h4 className="text-xl font-bold text-gray-900 dark:text-white" style={{ fontFamily: 'Kalam, cursive' }}>{job.role}</h4>
+                          <span className="text-[#89AC46] font-medium" style={{ fontFamily: 'Kalam, cursive' }}>{job.period}</span>
+                        </div>
+                        <p className="text-lg text-gray-700 dark:text-gray-300 mb-4" style={{ fontFamily: 'Kalam, cursive' }}>{job.company}</p>
+                        <p className="text-gray-600 dark:text-gray-300 mb-4" style={{ fontFamily: 'Kalam, cursive' }}>{job.description}</p>
+                        <div>
+                          <p className="font-medium text-gray-900 dark:text-white mb-2" style={{ fontFamily: 'Kalam, cursive' }}>Key Achievements:</p>
+                          <ul className="space-y-2">
+                            {job.achievements.map((achievement, i) => (
+                              <li key={i} className="flex items-start" style={{ fontFamily: 'Kalam, cursive' }}>
+                                <span className="text-[#89AC46] mr-2">•</span>
+                                <span className="text-gray-600 dark:text-gray-300">{achievement}</span>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              
+              {/* Education */}
+              <div>
+                <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-8 note-title" style={{ fontFamily: 'Kalam, cursive' }}>Education</h3>
+                <div className="note-card p-8">
+                  <div className="flex flex-col md:flex-row md:justify-between md:items-start mb-4">
+                    <div>
+                      <h4 className="text-xl font-bold text-gray-900 dark:text-white" style={{ fontFamily: 'Kalam, cursive' }}>B.S. Computer Science</h4>
+                      <p className="text-lg text-gray-700 dark:text-gray-300" style={{ fontFamily: 'Kalam, cursive' }}>University Name</p>
+                    </div>
+                    <span className="text-[#89AC46] font-medium" style={{ fontFamily: 'Kalam, cursive' }}>2018 - 2022</span>
+                  </div>
+                  <p className="text-gray-600 dark:text-gray-300" style={{ fontFamily: 'Kalam, cursive' }}>
+                    Focused on software engineering, algorithms, and web development. Graduated with honors.
+                  </p>
+                  <div className="mt-6">
+                    <p className="font-medium text-gray-900 dark:text-white mb-2" style={{ fontFamily: 'Kalam, cursive' }}>Relevant Coursework:</p>
+                    <div className="flex flex-wrap gap-2">
+                      {['Data Structures', 'Algorithms', 'Web Development', 'Database Systems', 'Software Engineering', 'Computer Networks'].map((course, index) => (
+                        <span 
+                          key={index}
+                          className="px-3 py-1 bg-[#89AC46]/10 text-[#89AC46] rounded-full text-sm"
+                          style={{ fontFamily: 'Kalam, cursive' }}
+                        >
+                          {course}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              {/* Download Resume Button */}
+              <div className="text-center pt-8">
+                <button 
+                  onClick={() => window.open('/Ingabire Dalcove (1).pdf', '_blank')}
+                  className="handwritten-btn inline-flex items-center"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                    <path fillRule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clipRule="evenodd" />
+                  </svg>
+                  Download Full Resume
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Skills Visualization Section */}
+      <section
+        id="skills"
+        className="min-h-screen flex items-center justify-center px-6 py-20"
+      >
+        <div className="max-w-6xl mx-auto">
+          <div className="note-card">
+            <div className="text-center mb-16">
+              <h2 className="text-4xl font-bold text-gray-900 dark:text-white mb-4 note-title" style={{ fontFamily: 'Kalam, cursive' }}>Skills & Expertise</h2>
+              <p className="text-lg text-gray-900 dark:text-gray-300 max-w-2xl mx-auto" style={{ fontFamily: 'Kalam, cursive' }}>
+                A visual representation of my technical skills and proficiency levels.
+              </p>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+              {/* Technical Skills */}
+              <div>
+                <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-8 note-title" style={{ fontFamily: 'Kalam, cursive' }}>Technical Skills</h3>
+                <div className="space-y-6">
+                  {[
+                    { name: "React.js", level: 90 },
+                    { name: "JavaScript", level: 85 },
+                    { name: "Node.js", level: 80 },
+                    { name: "Next.js", level: 75 },
+                    { name: "Tailwind CSS", level: 85 },
+                    { name: "MongoDB", level: 70 },
+                    { name: "Express", level: 75 },
+                    { name: "Figma", level: 70 }
+                  ].map((skill, index) => (
+                    <div key={index}>
+                      <div className="flex justify-between mb-2">
+                        <span className="font-medium text-gray-900 dark:text-white" style={{ fontFamily: 'Kalam, cursive' }}>{skill.name}</span>
+                        <span className="text-gray-600 dark:text-gray-300" style={{ fontFamily: 'Kalam, cursive' }}>{skill.level}%</span>
+                      </div>
+                      <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+                        <div 
+                          className="h-full bg-[#89AC46] rounded-full"
+                          style={{ width: `${skill.level}%` }}
+                        ></div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              
+              {/* Skill Categories */}
+              <div>
+                <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-8 note-title" style={{ fontFamily: 'Kalam, cursive' }}>Skill Categories</h3>
+                <div className="grid grid-cols-2 gap-6">
+                  {[
+                    { name: "Frontend", skills: ["React", "Next.js", "Tailwind", "Framer Motion"] },
+                    { name: "Backend", skills: ["Node.js", "Express", "Nest.js", "PocketBase"] },
+                    { name: "Database", skills: ["MongoDB", "PostgreSQL", "Firebase"] },
+                    { name: "Tools", skills: ["Git", "Figma", "VS Code", "Docker"] }
+                  ].map((category, index) => (
+                    <div key={index} className="note-card p-6">
+                      <h4 className="text-xl font-bold text-gray-900 dark:text-white mb-4 note-title" style={{ fontFamily: 'Kalam, cursive' }}>{category.name}</h4>
+                      <div className="flex flex-wrap gap-2">
+                        {category.skills.map((skill, i) => (
+                          <span 
+                            key={i}
+                            className="px-3 py-1 bg-[#89AC46]/10 text-[#89AC46] rounded-full text-sm"
+                            style={{ fontFamily: 'Kalam, cursive' }}
+                          >
+                            {skill}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                
+                {/* Languages */}
+                <div className="note-card p-6 mt-6">
+                  <h4 className="text-xl font-bold text-gray-900 dark:text-white mb-4 note-title" style={{ fontFamily: 'Kalam, cursive' }}>Languages</h4>
+                  <div className="space-y-4">
+                    {[
+                      { name: "English", level: "Fluent" },
+                      { name: "Spanish", level: "Intermediate" },
+                      { name: "French", level: "Basic" }
+                    ].map((language, index) => (
+                      <div key={index} className="flex justify-between items-center">
+                        <span className="font-medium text-gray-900 dark:text-white" style={{ fontFamily: 'Kalam, cursive' }}>{language.name}</span>
+                        <span className="px-3 py-1 bg-[#89AC46]/10 text-[#89AC46] rounded-full text-sm" style={{ fontFamily: 'Kalam, cursive' }}>
+                          {language.level}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Footer */}
       <footer className="bg-gray-900 text-white py-12">
         <div className="max-w-7xl mx-auto px-6">
@@ -1047,6 +1406,9 @@ function App() {
           </div>
         </div>
       </footer>
+        </main>
+      </>
+      )}
     </>
   );
 }
